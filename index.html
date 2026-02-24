@@ -2,84 +2,121 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>환율 계산기 by SJ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>세계여행 환율 계산기</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2489/2489756.png">
     <style>
-        body { font-family: -apple-system, sans-serif; padding: 20px; background: #f0f2f5; display: flex; justify-content: center; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 450px; }
-        h2 { text-align: center; color: #1c1e21; margin-bottom: 30px; font-size: 24px; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #4b4f56; font-size: 15px; }
-        input { width: 100%; padding: 15px; border: 1.5px solid #e4e6eb; border-radius: 12px; font-size: 22px; box-sizing: border-box; background: #f5f6f7; transition: all 0.2s; }
-        input:focus { border-color: #007aff; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+        :root { --bg: #f0f2f5; --card: #ffffff; --text: #000000; --label: #222222; --input-bg: #f5f6f7; --primary: #007aff; }
+        @media(prefers-color-scheme: dark) { :root { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --label: #eeeeee; --input-bg: #2c2c2e; } }
+        
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; display: flex; justify-content: center; }
+        .card { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 420px; }
+        h2 { text-align: center; color: var(--text); font-size: 19px; margin: 5px 0 20px 0; font-weight: 700; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600; color: var(--label); }
+        input { width: 100%; padding: 12px; border: 2px solid var(--input-bg); border-radius: 10px; font-size: 20px; font-weight: normal; background: var(--input-bg); color: var(--text); box-sizing: border-box; outline: none; -webkit-appearance: none; }
+        input:focus { border-color: var(--primary); background: var(--card); }
+        .tip-container { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--text); }
+        .tip-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: 600; font-size: 13px; cursor: pointer; }
+        
+        /* 상태 메시지: 볼드체 + 80% 투명도로 복원 */
+        .status { 
+            font-size: 11px; 
+            text-align: center; 
+            color: var(--label); 
+            margin-top: 15px; 
+            font-weight: 700; 
+            opacity: 0.8; 
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>🌍 환율 계산기</h2>
-        <div id="inputs"></div>
+<div class="card">
+    <h2>🌍 세계여행 환율 계산기</h2>
+    <div id="inputs"></div>
+    <div class="tip-container">
+        <button class="tip-btn" onclick="applyTip(1.1)">+ 팁 10%</button>
+        <button class="tip-btn" onclick="applyTip(1.15)">+ 팁 15%</button>
+        <button class="tip-btn" onclick="applyTip(1.2)">+ 팁 20%</button>
     </div>
+    <div class="status" id="last-update">최신 환율 확인 중...</div>
+</div>
 
-    <script>
-        // 요청하신 대로 형식을 변경했어: 코드가 앞으로!
-        const currencies = [
-            { code: 'KRW', name: '대한민국 🇰🇷' },
-            { code: 'USD', name: '미국 🇺🇸' },
-            { code: 'JPY', name: '일본 🇯🇵' },
-            { code: 'EUR', name: '유럽 연합 🇪🇺' },
-            { code: 'GBP', name: '영국 🇬🇧' },
-            { code: 'CNY', name: '중국 🇨🇳' },
-            { code: 'CZK', name: '체코 🇨🇿' },
-            { code: 'HUF', name: '헝가리 🇭🇺' },
-            { code: 'TRY', name: '터키 🇹🇷' },
-            { code: 'VND', name: '베트남 🇻🇳' },
-            { code: 'THB', name: '태국 🇹🇭' }
-        ];
-        let rates = {};
+<script>
+const currencies = [
+    {code:'KRW', name:'대한민국 🇰🇷'}, {code:'USD', name:'미국 🇺🇸'}, {code:'JPY', name:'일본 🇯🇵'},
+    {code:'EUR', name:'유럽 연합 🇪🇺'}, {code:'GBP', name:'영국 🇬🇧'}, {code:'CZK', name:'체코 🇨🇿'},
+    {code:'HUF', name:'헝가리 🇭🇺'}, {code:'TRY', name:'튀르키예 🇹🇷'}, {code:'VND', name:'베트남 🇻🇳'}
+];
 
-        async function fetchRates() {
-            try {
-                const res = await fetch('https://open.er-api.com/v6/latest/KRW');
-                const data = await res.json();
-                rates = data.rates;
-                renderInputs();
-            } catch (e) {
-                alert("환율 정보를 불러올 수 없어. 인터넷 연결을 확인해줘!");
-            }
+let rates = {};
+let lastFocusedId = 'KRW';
+
+async function fetchRates() {
+    try {
+        const res = await fetch('https://open.er-api.com/v6/latest/KRW');
+        const data = await res.json();
+        rates = data.rates;
+        localStorage.setItem('savedRates', JSON.stringify(rates));
+        document.getElementById('last-update').innerText = "✅ 실시간 환율 적용됨";
+    } catch(e) {
+        rates = JSON.parse(localStorage.getItem('savedRates')) || {};
+        document.getElementById('last-update').innerText = "⚠️ 저장된 데이터 사용 중";
+    }
+    renderInputs();
+}
+
+function renderInputs() {
+    const container = document.getElementById('inputs');
+    container.innerHTML = '';
+    currencies.forEach(cur => {
+        const group = document.createElement('div');
+        group.className = 'input-group';
+        // inputmode="decimal"을 통해 숫자 패드 호출
+        group.innerHTML = `<label>${cur.code} (${cur.name})</label>
+                           <input type="text" inputmode="decimal" pattern="[0-9]*" id="${cur.code}" placeholder="0" 
+                                  oninput="handleInput('${cur.code}')" 
+                                  onfocus="lastFocusedId='${cur.code}'">`;
+        container.appendChild(group);
+    });
+}
+
+function handleInput(code) {
+    const el = document.getElementById(code);
+    let val = el.value.replace(/,/g, '');
+    if (isNaN(val) || val === '') {
+        currencies.forEach(c => { if(c.code !== code) document.getElementById(c.code).value = ''; });
+        return;
+    }
+    el.value = Number(val).toLocaleString();
+    updateAll(code, parseFloat(val));
+}
+
+function updateAll(changedCode, val){
+    const baseKRW = val / rates[changedCode];
+    currencies.forEach(c => {
+        if(c.code !== changedCode && rates[c.code]) {
+            const res = (baseKRW * rates[c.code]).toFixed(2);
+            document.getElementById(c.code).value = Number(res).toLocaleString();
         }
+    });
+}
 
-        function renderInputs() {
-            const container = document.getElementById('inputs');
-            container.innerHTML = ''; 
-            currencies.forEach(cur => {
-                container.innerHTML += `
-                    <div class="input-group">
-                        <label>${cur.code} (${cur.name})</label>
-                        <input type="number" id="${cur.code}" placeholder="0" oninput="updateAll('${cur.code}')">
-                    </div>`;
-            });
+function applyTip(ratio) {
+    const activeEl = document.getElementById(lastFocusedId);
+    if (activeEl) {
+        let val = parseFloat(activeEl.value.replace(/,/g, ''));
+        if (!isNaN(val)) {
+            const tippedVal = (val * ratio).toFixed(2);
+            activeEl.value = Number(tippedVal).toLocaleString();
+            updateAll(lastFocusedId, tippedVal);
         }
+    }
+}
 
-        function updateAll(changedCode) {
-            const val = document.getElementById(changedCode).value;
-            if (!val) {
-                currencies.forEach(cur => {
-                    if (cur.code !== changedCode) document.getElementById(cur.code).value = '';
-                });
-                return;
-            }
-
-            const baseInKRW = val / rates[changedCode];
-
-            currencies.forEach(cur => {
-                if (cur.code !== changedCode) {
-                    const converted = (baseInKRW * rates[cur.code]).toFixed(2);
-                    document.getElementById(cur.code).value = converted;
-                }
-            });
-        }
-
-        fetchRates();
-    </script>
+fetchRates();
+</script>
 </body>
 </html>
