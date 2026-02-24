@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>환율 계산기 by SJ</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 20px; background: #f0f2f5; display: flex; justify-content: center; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 450px; }
+        h2 { text-align: center; color: #1c1e21; margin-bottom: 30px; font-size: 24px; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #4b4f56; font-size: 15px; }
+        input { width: 100%; padding: 15px; border: 1.5px solid #e4e6eb; border-radius: 12px; font-size: 22px; box-sizing: border-box; background: #f5f6f7; transition: all 0.2s; }
+        input:focus { border-color: #007aff; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🌍 환율 계산기</h2>
+        <div id="inputs"></div>
+    </div>
+
+    <script>
+        // 요청하신 대로 형식을 변경했어: 코드가 앞으로!
+        const currencies = [
+            { code: 'KRW', name: '대한민국 🇰🇷' },
+            { code: 'USD', name: '미국 🇺🇸' },
+            { code: 'JPY', name: '일본 🇯🇵' },
+            { code: 'EUR', name: '유럽 연합 🇪🇺' },
+            { code: 'GBP', name: '영국 🇬🇧' },
+            { code: 'CNY', name: '중국 🇨🇳' },
+            { code: 'CZK', name: '체코 🇨🇿' },
+            { code: 'HUF', name: '헝가리 🇭🇺' },
+            { code: 'TRY', name: '터키 🇹🇷' },
+            { code: 'VND', name: '베트남 🇻🇳' },
+            { code: 'THB', name: '태국 🇹🇭' }
+        ];
+        let rates = {};
+
+        async function fetchRates() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/KRW');
+                const data = await res.json();
+                rates = data.rates;
+                renderInputs();
+            } catch (e) {
+                alert("환율 정보를 불러올 수 없어. 인터넷 연결을 확인해줘!");
+            }
+        }
+
+        function renderInputs() {
+            const container = document.getElementById('inputs');
+            container.innerHTML = ''; 
+            currencies.forEach(cur => {
+                container.innerHTML += `
+                    <div class="input-group">
+                        <label>${cur.code} (${cur.name})</label>
+                        <input type="number" id="${cur.code}" placeholder="0" oninput="updateAll('${cur.code}')">
+                    </div>`;
+            });
+        }
+
+        function updateAll(changedCode) {
+            const val = document.getElementById(changedCode).value;
+            if (!val) {
+                currencies.forEach(cur => {
+                    if (cur.code !== changedCode) document.getElementById(cur.code).value = '';
+                });
+                return;
+            }
+
+            const baseInKRW = val / rates[changedCode];
+
+            currencies.forEach(cur => {
+                if (cur.code !== changedCode) {
+                    const converted = (baseInKRW * rates[cur.code]).toFixed(2);
+                    document.getElementById(cur.code).value = converted;
+                }
+            });
+        }
+
+        fetchRates();
+    </script>
+</body>
+</html>
