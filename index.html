@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>currency converter</title>
+    <title>Global Currency Converter</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2489/2489756.png">
@@ -11,15 +11,15 @@
         :root { --bg: #f0f2f5; --card: #ffffff; --text: #000000; --label: #222222; --input-bg: #f5f6f7; --primary: #007aff; }
         @media(prefers-color-scheme: dark) { :root { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --label: #eeeeee; --input-bg: #2c2c2e; } }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .card { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 420px; }
+        .card { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
         h2 { text-align: center; color: var(--text); font-size: 23px; margin: 5px 0 20px 0; font-weight: 800; }
-        .input-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600; color: var(--label); }
-        input { width: 100%; padding: 12px; border: 2px solid var(--input-bg); border-radius: 10px; font-size: 20px; font-weight: normal; background: var(--input-bg); color: var(--text); box-sizing: border-box; outline: none; -webkit-appearance: none; }
+        #inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        label { display: block; margin-bottom: 4px; font-size: 12.5px; font-weight: 600; color: var(--label); }
+        input { width: 100%; padding: 10px; border: 2px solid var(--input-bg); border-radius: 10px; font-size: 17px; font-weight: 400; background: var(--input-bg); color: var(--text); box-sizing: border-box; outline: none; -webkit-appearance: none; }
         input:focus { border-color: var(--primary); background: var(--card); }
-        .tip-container { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--text); }
-        .tip-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: 600; font-size: 13px; cursor: pointer; }
-        .status { font-size: 11px; text-align: center; color: var(--label); margin-top: 15px; font-weight: 700; opacity: 0.8; }
+        .tip-container { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
+        .tip-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: 600; font-size: 12px; cursor: pointer; }
+        .status { font-size: 10px; text-align: center; color: var(--label); margin-top: 15px; font-weight: 700; opacity: 0.6; }
     </style>
 </head>
 <body>
@@ -36,21 +36,39 @@
 
 <script>
 const currencies = [
-    {code:'KRW', name:'대한민국 🇰🇷'}, {code:'USD', name:'미국 🇺🇸'}, {code:'JPY', name:'일본 🇯🇵'},
-    {code:'EUR', name:'유럽 연합 🇪🇺'}, {code:'GBP', name:'영국 🇬🇧'}, {code:'CZK', name:'체코 🇨🇿'},
-    {code:'HUF', name:'헝가리 🇭🇺'}, {code:'TRY', name:'터키 🇹🇷'}, {code:'VND', name:'베트남 벤남 🇻🇳'}
+    {code:'KRW', name:'대한민국 🇰🇷'}, {code:'USD', name:'미국 🇺🇸'}, {code:'EUR', name:'유럽 연합 🇪🇺'},
+    {code:'GBP', name:'영국 🇬🇧'}, {code:'AED', name:'UAE 🇦🇪'}, {code:'JPY', name:'일본 🇯🇵'},
+    {code:'CZK', name:'체코 🇨🇿'}, {code:'HUF', name:'헝가리 🇭🇺'}, {code:'THB', name:'태국 🇹🇭'},
+    {code:'VND', name:'베트남 🇻🇳'}
 ];
 
 let rates = {};
 let lastFocusedId = 'KRW';
 
+function renderInputs() {
+    const container = document.getElementById('inputs');
+    container.innerHTML = '';
+    currencies.forEach(cur => {
+        const group = document.createElement('div');
+        group.innerHTML = `
+            <label>${cur.code} (${cur.name})</label>
+            <input type="text" inputmode="decimal" id="${cur.code}" placeholder="0" 
+                   oninput="handleInput('${cur.code}')" 
+                   onfocus="lastFocusedId='${cur.code}'; setTimeout(() => event.target.select(), 50);"
+                   onclick="this.select();">`;
+        container.appendChild(group);
+    });
+}
+
 async function fetchRates() {
     try {
         const res = await fetch('https://open.er-api.com/v6/latest/KRW');
         const data = await res.json();
-        rates = data.rates;
-        localStorage.setItem('savedRates', JSON.stringify(rates));
-        document.getElementById('last-update').innerText = "✅ 실시간 환율 적용됨";
+        if (data.result === "success") {
+            rates = data.rates;
+            localStorage.setItem('savedRates', JSON.stringify(rates));
+            document.getElementById('last-update').innerText = "✅ 실시간 환율 적용됨";
+        }
     } catch(e) {
         rates = JSON.parse(localStorage.getItem('savedRates')) || {};
         document.getElementById('last-update').innerText = "⚠️ 저장된 데이터 사용 중";
@@ -58,52 +76,43 @@ async function fetchRates() {
     renderInputs();
 }
 
-function renderInputs() {
-    const container = document.getElementById('inputs');
-    container.innerHTML = '';
-    currencies.forEach(cur => {
-        const group = document.createElement('div');
-        group.className = 'input-group';
-        // this.select()를 추가해서 터치 시 자동 전체선택 구현
-        group.innerHTML = `<label>${cur.code} (${cur.name})</label>
-                           <input type="text" inputmode="decimal" pattern="[0-9]*" id="${cur.code}" placeholder="0" 
-                                  oninput="handleInput('${cur.code}')" 
-                                  onfocus="lastFocusedId='${cur.code}'; this.select();"
-                                  onclick="this.select();">`;
-        container.appendChild(group);
+function formatCurrency(code, value) {
+    if (value === 0) return '';
+    const noDecimal = ['KRW','JPY','VND','HUF'];
+    return Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: noDecimal.includes(code) ? 0 : 2
     });
 }
 
 function handleInput(code) {
     const el = document.getElementById(code);
     let val = el.value.replace(/,/g, '');
-    if (isNaN(val) || val === '') {
-        currencies.forEach(c => { if(c.code !== code) document.getElementById(c.code).value = ''; });
+    if (val === '' || isNaN(val)) {
+        updateAll(code, 0);
         return;
     }
-    el.value = Number(val).toLocaleString();
     updateAll(code, parseFloat(val));
 }
 
-function updateAll(changedCode, val){
+function updateAll(changedCode, val) {
+    if (!rates[changedCode]) return;
     const baseKRW = val / rates[changedCode];
     currencies.forEach(c => {
-        if(c.code !== changedCode && rates[c.code]) {
-            const res = (baseKRW * rates[c.code]).toFixed(2);
-            document.getElementById(c.code).value = Number(res).toLocaleString();
+        if (c.code !== changedCode) {
+            const result = baseKRW * rates[c.code];
+            document.getElementById(c.code).value = formatCurrency(c.code, result);
         }
     });
 }
 
 function applyTip(ratio) {
-    const activeEl = document.getElementById(lastFocusedId);
-    if (activeEl) {
-        let val = parseFloat(activeEl.value.replace(/,/g, ''));
-        if (!isNaN(val)) {
-            const tippedVal = (val * ratio).toFixed(2);
-            activeEl.value = Number(tippedVal).toLocaleString();
-            updateAll(lastFocusedId, tippedVal);
-        }
+    const el = document.getElementById(lastFocusedId);
+    let val = parseFloat(el.value.replace(/,/g, ''));
+    if (!isNaN(val)) {
+        const tipped = val * ratio;
+        el.value = formatCurrency(lastFocusedId, tipped);
+        updateAll(lastFocusedId, tipped);
     }
 }
 
