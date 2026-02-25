@@ -15,7 +15,7 @@
         h2 { text-align: center; color: var(--text); font-size: 23px; margin: 5px 0 20px 0; font-weight: 800; }
         #inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         label { display: block; margin-bottom: 4px; font-size: 12.5px; font-weight: 600; color: var(--label); }
-        input { width: 100%; padding: 10px; border: 2px solid var(--input-bg); border-radius: 10px; font-size: 17px; font-weight: 400; background: var(--input-bg); color: var(--text); box-sizing: border-box; outline: none; -webkit-appearance: none; }
+        input { width: 100%; padding: 10px; border: 2px solid var(--input-bg); border-radius: 10px; font-size: 17px; font-weight: 600; background: var(--input-bg); color: var(--text); box-sizing: border-box; outline: none; -webkit-appearance: none; }
         input:focus { border-color: var(--primary); background: var(--card); }
         .tip-container { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
         .tip-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: 600; font-size: 12px; cursor: pointer; }
@@ -38,8 +38,8 @@
 const currencies = [
     {code:'KRW', name:'대한민국 🇰🇷'}, {code:'USD', name:'미국 🇺🇸'}, {code:'EUR', name:'유럽 연합 🇪🇺'},
     {code:'GBP', name:'영국 🇬🇧'}, {code:'AED', name:'UAE 🇦🇪'}, {code:'JPY', name:'일본 🇯🇵'},
-    {code:'CZK', name:'체코 🇨🇿'}, {code:'HUF', name:'헝가리 🇭🇺'}, {code:'THB', name:'태국 🇹🇭'},
-    {code:'VND', name:'베트남 🇻🇳'}
+    {code:'CZK', name:'체코 🇨🇿'}, {code:'HUF', name:'헝가리 🇭🇺'}, {code:'TRY', name:'튀르키예 🇹🇷'},
+    {code:'THB', name:'태국 🇹🇭'}, {code:'VND', name:'베트남 🇻🇳'}
 ];
 
 let rates = {};
