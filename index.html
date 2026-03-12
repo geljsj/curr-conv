@@ -4,12 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Global Currency Converter</title>
-
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
 <link rel="apple-touch-icon" href="logo.jpg">
-
 <style>
 :root {
 --bg:#f2f2f7;
@@ -19,7 +16,6 @@
 --input-bg:#f2f2f7;
 --primary:#007aff;
 }
-
 @media(prefers-color-scheme: dark){
 :root{
 --bg:#000000;
@@ -29,7 +25,6 @@
 --input-bg:#2c2c2e;
 }
 }
-
 body{
 font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 background:var(--bg);
@@ -41,13 +36,11 @@ height:100vh;
 overscroll-behavior:none;
 overflow:hidden;
 }
-
 .top-info{
 padding:40px 25px 10px 25px;
 display: flex;
 flex-direction: column;
 }
-
 h2{
 font-size:26px;
 margin:0;
@@ -55,7 +48,6 @@ font-weight:800;
 letter-spacing:-1px;
 color:var(--text);
 }
-
 .guide-text{
 font-size:13px;
 color:var(--label);
@@ -63,19 +55,16 @@ font-weight:500;
 line-height:1.5;
 margin-top:8px;
 }
-
 .bottom-area{
 margin-top:auto;
 display:flex;
 flex-direction:column;
 }
-
 .base-selector-wrapper{
 display:flex;
 justify-content:flex-end;
 padding:0 25px 12px 0;
 }
-
 select#base-select{
 padding:8px 14px;
 border-radius:12px;
@@ -88,13 +77,11 @@ outline:none;
 appearance:none;
 cursor:pointer;
 }
-
 @media(prefers-color-scheme: dark){
 select#base-select{
 background:rgba(255,255,255,0.1);
 }
 }
-
 .container-card{
 padding:20px;
 display:flex;
@@ -107,7 +94,6 @@ box-shadow:0 -10px 30px rgba(0,0,0,0.08);
 padding-bottom:env(safe-area-inset-bottom,20px);
 max-height:70vh;
 }
-
 #inputs{
 display:grid;
 grid-template-columns:1fr 1fr;
@@ -117,7 +103,6 @@ overflow-y:auto;
 padding:2px;
 -webkit-overflow-scrolling:touch;
 }
-
 .input-group{
 background:var(--input-bg);
 padding:8px 12px;
@@ -125,14 +110,12 @@ border-radius:14px;
 border:2px solid transparent;
 transition:all .3s cubic-bezier(.25,1,.5,1);
 }
-
 .input-group:focus-within{
 border-color:var(--primary);
 background:var(--card);
 box-shadow:0 4px 12px rgba(0,0,0,.08);
 transform:translateY(-1px);
 }
-
 label{
 display:block;
 margin-bottom:2px;
@@ -140,7 +123,6 @@ font-size:9px;
 font-weight:700;
 color:var(--label);
 }
-
 input{
 width:100%;
 border:none;
@@ -152,30 +134,37 @@ outline:none;
 padding:0;
 }
 
-.tip-container{
-display:flex;
-gap:8px;
-margin-top:5px;
+/* 팁 인터페이스 디자인 반영 */
+.tip-section-wrapper {
+    margin-top: 5px;
 }
-
-.tip-btn{
-flex:1;
-padding:16px;
-border:none;
-border-radius:16px;
-background:var(--primary);
-color:white;
-font-weight:700;
-font-size:13px;
-cursor:pointer;
-transition: transform 0.1s;
+.tip-header {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    padding-left: 2px;
 }
-
+.tip-container {
+    display: flex;
+    gap: 8px;
+}
+.tip-btn {
+    flex: 1;
+    padding: 16px 0;
+    border: none;
+    border-radius: 16px;
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
 .tip-btn:active {
-transform: scale(0.96);
-opacity: 0.9;
+    transform: scale(0.96);
+    opacity: 0.9;
 }
-
 .status{
 font-size:10px;
 text-align:center;
@@ -186,9 +175,7 @@ margin-bottom:10px;
 }
 </style>
 </head>
-
 <body>
-
 <div class="top-info">
 <h2>🌏 세계여행 환율 계산기</h2>
 <div class="guide-text">
@@ -196,7 +183,6 @@ margin-bottom:10px;
 하단 버튼으로 빠르게 팁을 추가해 보세요.
 </div>
 </div>
-
 <div class="bottom-area">
 <div class="base-selector-wrapper">
 <select id="base-select" onchange="changeBase(this.value)">
@@ -206,7 +192,6 @@ margin-bottom:10px;
 <option value="JPY">기준 통화: JPY</option>
 </select>
 </div>
-
 <div class="container-card">
     <div id="inputs"></div>
     
@@ -222,7 +207,6 @@ margin-bottom:10px;
     
     <div class="status" id="last-update">Updating...</div>
 </div>
-
 <script>
 const currencies=[
 {code:'KRW',name:'KR 🇰🇷'},
@@ -240,13 +224,10 @@ const currencies=[
 {code:'CZK',name:'CZ 🇨🇿'},
 {code:'HUF',name:'HU 🇭🇺'}
 ];
-
 let rates={};
 let lastFocusedId='KRW';
 let baseCurrency=localStorage.getItem('baseCurrency')||'KRW';
-
 document.getElementById('base-select').value=baseCurrency;
-
 function renderInputs(){
 const container=document.getElementById('inputs');
 container.innerHTML='';
@@ -266,14 +247,12 @@ onclick="this.select()">
 container.appendChild(group);
 });
 }
-
 async function fetchRates(){
 const CACHE_KEY=`rates_${baseCurrency}`;
 const TIME_KEY=`rates_time_${baseCurrency}`;
 const TWELVE_HOURS=12*60*60*1000;
 const now=Date.now();
 const lastFetch=localStorage.getItem(TIME_KEY);
-
 if(lastFetch && now-lastFetch < TWELVE_HOURS){
 const cached=localStorage.getItem(CACHE_KEY);
 if(cached){
@@ -284,7 +263,6 @@ renderInputs();
 return;
 }
 }
-
 try{
 const res=await fetch(`https://open.er-api.com/v6/latest/${baseCurrency}`);
 const data=await res.json();
@@ -304,7 +282,6 @@ document.getElementById('last-update').innerText="⚠️ Offline Cached";
 }
 renderInputs();
 }
-
 async function changeBase(newBase){
 baseCurrency=newBase;
 localStorage.setItem('baseCurrency',newBase);
@@ -317,7 +294,6 @@ parseFloat(currentInput.value.replace(/,/g,''))||0
 );
 }
 }
-
 function formatCurrency(code,value){
 if(value===0) return '';
 const noDecimal=['KRW','JPY','VND','HUF','IDR'];
@@ -326,7 +302,6 @@ minimumFractionDigits:0,
 maximumFractionDigits:noDecimal.includes(code)?0:2
 });
 }
-
 function handleInput(code){
 const el=document.getElementById(code);
 let val=el.value.replace(/,/g,'');
@@ -336,7 +311,6 @@ return;
 }
 updateAll(code,parseFloat(val));
 }
-
 function updateAll(changedCode,val){
 if(!rates[changedCode]) return;
 const baseVal=val/rates[changedCode];
@@ -348,7 +322,6 @@ targetEl.value=formatCurrency(c.code,result);
 }
 });
 }
-
 function applyTip(ratio){
 const el=document.getElementById(lastFocusedId);
 let val=parseFloat(el.value.replace(/,/g,''));
@@ -358,7 +331,6 @@ el.value=formatCurrency(lastFocusedId,tipped);
 updateAll(lastFocusedId,tipped);
 }
 }
-
 fetchRates();
 </script>
 </body>
