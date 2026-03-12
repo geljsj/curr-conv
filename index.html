@@ -19,77 +19,85 @@
         body { 
             font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
             background: var(--bg); margin: 0; padding: 0; 
-            display: flex; flex-direction: column; height: 100vh; justify-content: flex-end;
+            display: flex; flex-direction: column; height: 100vh; 
+            justify-content: flex-end;
+            overscroll-behavior: none; 
+            overflow: hidden;
         }
 
         .container {
-            padding: 20px;
+            padding: 18px 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             background: var(--card);
             border-top-left-radius: 30px;
             border-top-right-radius: 30px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
-            padding-bottom: env(safe-area-inset-bottom, 20px);
+            padding-bottom: env(safe-area-inset-bottom, 15px);
+            max-height: 92vh;
         }
 
         .header { display: flex; justify-content: space-between; align-items: center; }
-        h2 { font-size: 18px; margin: 0; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+        h2 { font-size: 24px; margin: 0; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
 
         .guide-text {
-            font-size: 12px; color: var(--label); font-weight: 500;
-            line-height: 1.4; margin-bottom: 5px;
+            font-size: 11px; color: var(--label); font-weight: 500;
+            line-height: 1.4; margin-bottom: 2px;
         }
 
         select#base-select {
-            padding: 8px 12px; border-radius: 12px; border: none;
-            background: var(--input-bg); color: var(--text); font-weight: 600; font-size: 13px;
+            padding: 6px 10px; border-radius: 10px; border: none;
+            background: var(--input-bg); color: var(--text); font-weight: 600; font-size: 12px;
             outline: none; appearance: none; cursor: pointer;
         }
 
         #inputs { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 10px; 
-            max-height: 50vh; 
+            gap: 8px; 
+            max-height: 55vh; 
             overflow-y: auto; 
             padding: 2px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .input-group { 
-            background: var(--input-bg); padding: 12px 15px; border-radius: 18px; 
+            background: var(--input-bg); padding: 8px 12px; border-radius: 14px; 
             border: 2px solid transparent; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .input-group:focus-within { 
             border-color: var(--primary); background: var(--card); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px);
         }
 
-        label { display: block; margin-bottom: 4px; font-size: 10px; font-weight: 700; color: var(--label); }
+        label { display: block; margin-bottom: 2px; font-size: 9px; font-weight: 700; color: var(--label); }
 
         input { 
-            width: 100%; border: none; background: transparent; font-size: 18px; 
+            width: 100%; border: none; background: transparent; font-size: 17px; 
             font-weight: 700; color: var(--text); outline: none; padding: 0; 
         }
 
-        .tip-container { display: flex; gap: 8px; margin-top: 5px; }
+        .tip-container { display: flex; gap: 8px; margin-top: 2px; }
         .tip-btn { 
-            flex: 1; padding: 15px; border: none; border-radius: 16px; 
-            background: var(--primary); color: white; font-weight: 700; font-size: 14px; 
+            flex: 1; padding: 14px; border: none; border-radius: 14px; 
+            background: var(--primary); color: white; font-weight: 700; font-size: 12px; 
             cursor: pointer; transition: transform 0.1s;
         }
         .tip-btn:active { transform: scale(0.96); opacity: 0.9; }
 
-        .status { font-size: 10px; text-align: center; color: var(--label); font-weight: 600; padding-top: 5px; }
+        .status { 
+            font-size: 9px; text-align: center; color: var(--label); 
+            font-weight: 600; padding-top: 5px; margin-bottom: 12px; 
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h2>🌏 세계여행 통화 변환기</h2>
+        <h2>🌏 세계여행 환율 계산기</h2>
         <select id="base-select" onchange="changeBase(this.value)">
             <option value="KRW">Base: KRW</option>
             <option value="USD">Base: USD</option>
@@ -99,31 +107,32 @@
     </div>
 
     <div class="guide-text">
-        기준 통화를 선택하고 금액을 입력하고,<br>+버튼으로 팁을 추가해보세요.
+        기준 통화 선택 후 금액을 입력하고, 버튼으로 팁을 추가해 보세요.
     </div>
 
     <div id="inputs"></div>
 
     <div class="tip-container">
-        <button class="tip-btn" onclick="applyTip(1.1)">+10%</button>
-        <button class="tip-btn" onclick="applyTip(1.15)">+15%</button>
-        <button class="tip-btn" onclick="applyTip(1.2)">+20%</button>
+        <button class="tip-btn" onclick="applyTip(1.1)">+팁 10%</button>
+        <button class="tip-btn" onclick="applyTip(1.15)">+팁 15%</button>
+        <button class="tip-btn" onclick="applyTip(1.2)">+팁 20%</button>
     </div>
 
     <div class="status" id="last-update">Updating...</div>
 </div>
 
 <script>
+// KRW를 최상단으로 재배치
 const currencies = [
-    {code:'JPY', name:'JP 🇯🇵'}, {code:'USD', name:'US 🇺🇸'}, {code:'EUR', name:'EU 🇪🇺'},
-    {code:'THB', name:'TH 🇹🇭'}, {code:'VND', name:'VN 🇻🇳'}, {code:'CNY', name:'CN 🇨🇳'},
-    {code:'PHP', name:'PH 🇵🇭'}, {code:'TWD', name:'TW 🇹🇼'}, {code:'HKD', name:'HK 🇭🇰'},
-    {code:'SGD', name:'SG 🇸🇬'}, {code:'KRW', name:'KR 🇰🇷'}, {code:'TRY', name:'TR 🇹🇷'},
+    {code:'KRW', name:'KR 🇰🇷'}, {code:'JPY', name:'JP 🇯🇵'}, {code:'USD', name:'US 🇺🇸'}, 
+    {code:'EUR', name:'EU 🇪🇺'}, {code:'THB', name:'TH 🇹🇭'}, {code:'VND', name:'VN 🇻🇳'}, 
+    {code:'CNY', name:'CN 🇨🇳'}, {code:'PHP', name:'PH 🇵🇭'}, {code:'TWD', name:'TW 🇹🇼'}, 
+    {code:'HKD', name:'HK 🇭🇰'}, {code:'SGD', name:'SG 🇸🇬'}, {code:'TRY', name:'TR 🇹🇷'},
     {code:'CZK', name:'CZ 🇨🇿'}, {code:'HUF', name:'HU 🇭🇺'}
 ];
 
 let rates = {};
-let lastFocusedId = 'JPY'; 
+let lastFocusedId = 'KRW'; // 기본 포커스도 KRW로 변경
 let baseCurrency = localStorage.getItem('baseCurrency') || 'KRW';
 
 document.getElementById('base-select').value = baseCurrency;
