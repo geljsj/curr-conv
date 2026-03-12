@@ -134,7 +134,7 @@ outline:none;
 padding:0;
 }
 
-/* 팁 인터페이스 디자인 반영 */
+/* 팁 인터페이스 레이아웃 */
 .tip-section-wrapper {
     margin-top: 5px;
 }
@@ -144,6 +144,7 @@ padding:0;
     color: var(--text);
     margin-bottom: 10px;
     padding-left: 2px;
+    line-height: 1.4; /* 줄바꿈 시 간격 */
 }
 .tip-container {
     display: flex;
@@ -179,8 +180,7 @@ margin-bottom:10px;
 <div class="top-info">
 <h2>🌏 세계여행 환율 계산기</h2>
 <div class="guide-text">
-기준 통화 선택 후 금액을 입력하면 모든 통화로 동시 변환됩니다.<br>
-하단 버튼으로 빠르게 팁을 추가해 보세요.
+기준 통화 선택 후 금액을 입력하면 모든 통화로 동시 변환됩니다.
 </div>
 </div>
 <div class="bottom-area">
@@ -196,7 +196,7 @@ margin-bottom:10px;
     <div id="inputs"></div>
     
     <div class="tip-section-wrapper">
-        <div class="tip-header">팁 빠르게 추가</div>
+        <div class="tip-header">하단 버튼으로 빠르게<br>팁을 추가해 보세요.</div>
         <div class="tip-container">
             <button class="tip-btn" onclick="applyTip(1.05)">+5%</button>
             <button class="tip-btn" onclick="applyTip(1.10)">+10%</button>
@@ -206,6 +206,7 @@ margin-bottom:10px;
     </div>
     
     <div class="status" id="last-update">Updating...</div>
+</div>
 </div>
 <script>
 const currencies=[
