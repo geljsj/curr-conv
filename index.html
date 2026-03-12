@@ -133,38 +133,27 @@ color:var(--text);
 outline:none;
 padding:0;
 }
-
-/* 팁 인터페이스 레이아웃 */
-.tip-section-wrapper {
-    margin-top: 5px;
+/* 팁 버튼 스타일 */
+.tip-container{
+display:flex;
+gap:8px;
+margin-top:5px;
 }
-.tip-header {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 10px;
-    padding-left: 2px;
-    line-height: 1.4; /* 줄바꿈 시 간격 */
-}
-.tip-container {
-    display: flex;
-    gap: 8px;
-}
-.tip-btn {
-    flex: 1;
-    padding: 16px 0;
-    border: none;
-    border-radius: 16px;
-    background: var(--primary);
-    color: white;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: transform 0.1s;
+.tip-btn{
+flex:1;
+padding:16px 0;
+border:none;
+border-radius:16px;
+background:var(--primary);
+color:white;
+font-weight:700;
+font-size:13px;
+cursor:pointer;
+transition: transform 0.1s;
 }
 .tip-btn:active {
-    transform: scale(0.96);
-    opacity: 0.9;
+transform: scale(0.96);
+opacity: 0.9;
 }
 .status{
 font-size:10px;
@@ -180,7 +169,8 @@ margin-bottom:10px;
 <div class="top-info">
 <h2>🌏 세계여행 환율 계산기</h2>
 <div class="guide-text">
-기준 통화 선택 후 금액을 입력하면 모든 통화로 동시 변환됩니다.
+기준 통화 선택 후 금액을 입력하면 모든 통화로 동시 변환됩니다.<br>
+하단 버튼으로 빠르게 팁을 추가해 보세요.
 </div>
 </div>
 <div class="bottom-area">
@@ -194,17 +184,12 @@ margin-bottom:10px;
 </div>
 <div class="container-card">
     <div id="inputs"></div>
-    
-    <div class="tip-section-wrapper">
-        <div class="tip-header">하단 버튼으로 빠르게<br>팁을 추가해 보세요.</div>
-        <div class="tip-container">
-            <button class="tip-btn" onclick="applyTip(1.05)">+5%</button>
-            <button class="tip-btn" onclick="applyTip(1.10)">+10%</button>
-            <button class="tip-btn" onclick="applyTip(1.15)">+15%</button>
-            <button class="tip-btn" onclick="applyTip(1.20)">+20%</button>
-        </div>
+    <div class="tip-container">
+        <button class="tip-btn" onclick="applyTip(1.05)">+5%</button>
+        <button class="tip-btn" onclick="applyTip(1.10)">+10%</button>
+        <button class="tip-btn" onclick="applyTip(1.15)">+15%</button>
+        <button class="tip-btn" onclick="applyTip(1.20)">+20%</button>
     </div>
-    
     <div class="status" id="last-update">Updating...</div>
 </div>
 </div>
