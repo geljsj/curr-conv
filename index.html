@@ -190,15 +190,11 @@ margin-bottom:10px;
 <body>
 
 <div class="top-info">
-    <h2>🌏 세계여행 환율 계산기</h2>
-    <div class="guide-text">
-        기준 통화를 선택 후 금액을 입력하고,<br>
-        하단 버튼으로 빠르게 팁을 추가해 보세요.
-        <span class="disclaimer">
-            ※ 본 계산기는 여행 편의를 위해 제작되었습니다.<br>
-            미세한 오차가 있을 수 있으니 참고용으로만 사용해 주세요.
-        </span>
-    </div>
+<h2>🌏 세계여행 환율 계산기</h2>
+<div class="guide-text">
+기준 통화 선택 후 금액을 입력하면 모든 통화로 동시 변환됩니다.<br>
+하단 버튼으로 빠르게 팁을 추가해 보세요.
+</div>
 </div>
 
 <div class="bottom-area">
@@ -212,14 +208,19 @@ margin-bottom:10px;
 </div>
 
 <div class="container-card">
-<div id="inputs"></div>
-<div class="tip-container">
-<button class="tip-btn" onclick="applyTip(1.1)">+팁 10%</button>
-<button class="tip-btn" onclick="applyTip(1.15)">+팁 15%</button>
-<button class="tip-btn" onclick="applyTip(1.2)">+팁 20%</button>
-</div>
-<div class="status" id="last-update">Updating...</div>
-</div>
+    <div id="inputs"></div>
+    
+    <div class="tip-section-wrapper">
+        <div class="tip-header">팁 빠르게 추가</div>
+        <div class="tip-container">
+            <button class="tip-btn" onclick="applyTip(1.05)">+5%</button>
+            <button class="tip-btn" onclick="applyTip(1.10)">+10%</button>
+            <button class="tip-btn" onclick="applyTip(1.15)">+15%</button>
+            <button class="tip-btn" onclick="applyTip(1.20)">+20%</button>
+        </div>
+    </div>
+    
+    <div class="status" id="last-update">Updating...</div>
 </div>
 
 <script>
