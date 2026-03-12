@@ -8,48 +8,142 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2489/2489756.png">
     <style>
-        :root { --bg: #f0f2f5; --card: #ffffff; --text: #000000; --label: #222222; --input-bg: #f5f6f7; --primary: #007aff; }
-        @media(prefers-color-scheme: dark) { :root { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --label: #eeeeee; --input-bg: #2c2c2e; } }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .card { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        h2 { text-align: center; color: var(--text); font-size: 24px; margin: 5px 0 20px 0; font-weight: 800; }
-        #inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        label { display: block; margin-bottom: 4px; font-size: 12.5px; font-weight: 600; color: var(--label); }
-        input { width: 100%; padding: 10px; border: 2px solid var(--input-bg); border-radius: 10px; font-size: 17px; font-weight: 600; background: var(--input-bg); color: var(--text); box-sizing: border-box; outline: none; -webkit-appearance: none; }
-        input:focus { border-color: var(--primary); background: var(--card); }
-        .tip-container { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
-        .tip-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: 600; font-size: 14px; cursor: pointer; }
-        .status { font-size: 10px; text-align: center; color: var(--label); margin-top: 15px; font-weight: 700; opacity: 0.6; }
+        :root { 
+            --bg: #f2f2f7; --card: #ffffff; --text: #000000; 
+            --label: #8e8e93; --input-bg: #f2f2f7; --primary: #007aff; 
+        }
+        @media(prefers-color-scheme: dark) { 
+            :root { --bg: #000000; --card: #1c1c1e; --text: #ffffff; --label: #8e8e93; --input-bg: #2c2c2e; } 
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: var(--bg); margin: 0; padding: 0; 
+            display: flex; flex-direction: column; height: 100vh; justify-content: flex-end;
+        }
+
+        .container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--card);
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        h2 { font-size: 18px; margin: 0; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+
+        .guide-text {
+            font-size: 12px; color: var(--label); font-weight: 500;
+            line-height: 1.4; margin-bottom: 5px;
+        }
+
+        select#base-select {
+            padding: 8px 12px; border-radius: 12px; border: none;
+            background: var(--input-bg); color: var(--text); font-weight: 600; font-size: 13px;
+            outline: none; appearance: none; cursor: pointer;
+        }
+
+        #inputs { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+            max-height: 50vh; 
+            overflow-y: auto; 
+            padding: 2px;
+        }
+
+        .input-group { 
+            background: var(--input-bg); padding: 12px 15px; border-radius: 18px; 
+            border: 2px solid transparent; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .input-group:focus-within { 
+            border-color: var(--primary); background: var(--card); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px);
+        }
+
+        label { display: block; margin-bottom: 4px; font-size: 10px; font-weight: 700; color: var(--label); }
+
+        input { 
+            width: 100%; border: none; background: transparent; font-size: 18px; 
+            font-weight: 700; color: var(--text); outline: none; padding: 0; 
+        }
+
+        .tip-container { display: flex; gap: 8px; margin-top: 5px; }
+        .tip-btn { 
+            flex: 1; padding: 15px; border: none; border-radius: 16px; 
+            background: var(--primary); color: white; font-weight: 700; font-size: 14px; 
+            cursor: pointer; transition: transform 0.1s;
+        }
+        .tip-btn:active { transform: scale(0.96); opacity: 0.9; }
+
+        .status { font-size: 10px; text-align: center; color: var(--label); font-weight: 600; padding-top: 5px; }
     </style>
 </head>
 <body>
-<div class="card">
-    <h2>🌍 세계여행 통화 변환기</h2>
-    <div id="inputs"></div>
-    <div class="tip-container">
-        <button class="tip-btn" onclick="applyTip(1.1)">+ 10%</button>
-        <button class="tip-btn" onclick="applyTip(1.15)">+ 15%</button>
-        <button class="tip-btn" onclick="applyTip(1.2)">+ 20%</button>
+
+<div class="container">
+    <div class="header">
+        <h2>🌏 세계여행 통화 변환기</h2>
+        <select id="base-select" onchange="changeBase(this.value)">
+            <option value="KRW">Base: KRW</option>
+            <option value="USD">Base: USD</option>
+            <option value="EUR">Base: EUR</option>
+            <option value="JPY">Base: JPY</option>
+        </select>
     </div>
-    <div class="status" id="last-update">최신 환율 확인 중...</div>
+
+    <div class="guide-text">
+        기준 통화를 선택하고 금액을 입력하고,<br>+버튼으로 팁을 추가해보세요.
+    </div>
+
+    <div id="inputs"></div>
+
+    <div class="tip-container">
+        <button class="tip-btn" onclick="applyTip(1.1)">+10%</button>
+        <button class="tip-btn" onclick="applyTip(1.15)">+15%</button>
+        <button class="tip-btn" onclick="applyTip(1.2)">+20%</button>
+    </div>
+
+    <div class="status" id="last-update">Updating...</div>
 </div>
 
 <script>
 const currencies = [
-    {code:'KRW', name:'대한민국 🇰🇷'}, {code:'USD', name:'미국 🇺🇸'}, {code:'EUR', name:'유럽 연합 🇪🇺'},
-    {code:'GBP', name:'영국 🇬🇧'}, {code:'AED', name:'UAE 🇦🇪'}, {code:'JPY', name:'일본 🇯🇵'},
-    {code:'CZK', name:'체코 🇨🇿'}, {code:'HUF', name:'헝가리 🇭🇺'}, {code:'TRY', name:'튀르키예 🇹🇷'},
-    {code:'THB', name:'태국 🇹🇭'}, {code:'VND', name:'베트남 🇻🇳'}
+    {code:'JPY', name:'JP 🇯🇵'}, {code:'USD', name:'US 🇺🇸'}, {code:'EUR', name:'EU 🇪🇺'},
+    {code:'THB', name:'TH 🇹🇭'}, {code:'VND', name:'VN 🇻🇳'}, {code:'CNY', name:'CN 🇨🇳'},
+    {code:'PHP', name:'PH 🇵🇭'}, {code:'TWD', name:'TW 🇹🇼'}, {code:'HKD', name:'HK 🇭🇰'},
+    {code:'SGD', name:'SG 🇸🇬'}, {code:'KRW', name:'KR 🇰🇷'}, {code:'TRY', name:'TR 🇹🇷'},
+    {code:'CZK', name:'CZ 🇨🇿'}, {code:'HUF', name:'HU 🇭🇺'}
 ];
 
 let rates = {};
-let lastFocusedId = 'KRW';
+let lastFocusedId = 'JPY'; 
+let baseCurrency = localStorage.getItem('baseCurrency') || 'KRW';
+
+document.getElementById('base-select').value = baseCurrency;
+
+async function changeBase(newBase) {
+    baseCurrency = newBase;
+    localStorage.setItem('baseCurrency', newBase);
+    await fetchRates();
+    const currentInput = document.getElementById(lastFocusedId);
+    if (currentInput) {
+        updateAll(lastFocusedId, parseFloat(currentInput.value.replace(/,/g, '')) || 0);
+    }
+}
 
 function renderInputs() {
     const container = document.getElementById('inputs');
     container.innerHTML = '';
     currencies.forEach(cur => {
         const group = document.createElement('div');
+        group.className = 'input-group';
         group.innerHTML = `
             <label>${cur.code} (${cur.name})</label>
             <input type="text" inputmode="decimal" id="${cur.code}" placeholder="0" 
@@ -62,23 +156,23 @@ function renderInputs() {
 
 async function fetchRates() {
     try {
-        const res = await fetch('https://open.er-api.com/v6/latest/KRW');
+        const res = await fetch(`https://open.er-api.com/v6/latest/${baseCurrency}`);
         const data = await res.json();
         if (data.result === "success") {
             rates = data.rates;
-            localStorage.setItem('savedRates', JSON.stringify(rates));
-            document.getElementById('last-update').innerText = "✅ 실시간 환율 적용됨";
+            localStorage.setItem(`rates_${baseCurrency}`, JSON.stringify(rates));
+            document.getElementById('last-update').innerText = `✅ Updated: ${new Date().toLocaleTimeString()}`;
         }
     } catch(e) {
-        rates = JSON.parse(localStorage.getItem('savedRates')) || {};
-        document.getElementById('last-update').innerText = "⚠️ 저장된 데이터 사용 중";
+        rates = JSON.parse(localStorage.getItem(`rates_${baseCurrency}`)) || {};
+        document.getElementById('last-update').innerText = "⚠️ Offline Mode";
     }
     renderInputs();
 }
 
 function formatCurrency(code, value) {
     if (value === 0) return '';
-    const noDecimal = ['KRW','JPY','VND','HUF'];
+    const noDecimal = ['KRW','JPY','VND','HUF','IDR'];
     return Number(value).toLocaleString(undefined, {
         minimumFractionDigits: 0,
         maximumFractionDigits: noDecimal.includes(code) ? 0 : 2
@@ -88,20 +182,18 @@ function formatCurrency(code, value) {
 function handleInput(code) {
     const el = document.getElementById(code);
     let val = el.value.replace(/,/g, '');
-    if (val === '' || isNaN(val)) {
-        updateAll(code, 0);
-        return;
-    }
+    if (val === '' || isNaN(val)) { updateAll(code, 0); return; }
     updateAll(code, parseFloat(val));
 }
 
 function updateAll(changedCode, val) {
     if (!rates[changedCode]) return;
-    const baseKRW = val / rates[changedCode];
+    const baseVal = val / rates[changedCode]; 
     currencies.forEach(c => {
-        if (c.code !== changedCode) {
-            const result = baseKRW * rates[c.code];
-            document.getElementById(c.code).value = formatCurrency(c.code, result);
+        const targetEl = document.getElementById(c.code);
+        if (targetEl && c.code !== changedCode) {
+            const result = baseVal * rates[c.code];
+            targetEl.value = formatCurrency(c.code, result);
         }
     });
 }
